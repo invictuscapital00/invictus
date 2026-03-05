@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Invictus | Registro</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: #161616; padding: 40px; border-radius: 24px; border: 1px solid #333; width: 350px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        h2 { color: #00ff88; letter-spacing: 2px; margin-bottom: 30px; }
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-left: 5px; }
+        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: white; border-radius: 10px; box-sizing: border-box; margin-top: 5px; }
+        input:focus { border-color: #00ff88; outline: none; }
+        .eye { position: absolute; right: 15px; top: 38px; cursor: pointer; color: #00ff88; }
+        .btn-reg { width: 100%; padding: 15px; background: #00ff88; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
+        .btn-reg:hover { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>ÚNETE A EQUIPO</h2>
+        
+        <div class="input-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="nombre" placeholder="Ej: Juan Pérez">
+        </div>
+
+        <div class="input-group">
+            <label>Correo Electrónico</label>
+            <input type="email" id="email" placeholder="tu@email.com">
+        </div>
+
+        <div class="input-group">
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="••••••••">
+            <span class="eye" onclick="togglePass()">👁️</span>
+        </div>
+
+        <div class="input-group">
+            <label>Patrocinador (Referido)</label>
+            <input type="text" id="referido" placeholder="Opcional" readonly>
+        </div>
+
+        <button class="btn-reg" onclick="registrar()">Crear Cuenta</button>
+        <p style="font-size: 0.8rem; margin-top: 20px;">¿Ya tienes cuenta? <a href="login.html" style="color: #00ff88; text-decoration: none;">Inicia Sesión</a></p>
+    </div>
+
+    <script>
+        // Lógica para detectar referido desde la URL (?ref=Nombre)
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if(ref) {
+                document.getElementById('referido').value = ref;
+                document.getElementById('referido').style.borderColor = "#00ff88";
+            }
+        };
+
+        function togglePass() {
+            const p = document.getElementById('password');
+            p.type = p.type === 'password' ? 'text' : 'password';
+        }
+
+        async function registrar() {
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const referidoPor = document.getElementById('referido').value;
+
+            if(!nombre || !email || !password) return alert("Completa todos los campos");
+
+            const res = await fetch('http://localhost:3000/api/registro', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nombre, email, password, referidoPor })
+            });
+
+            if(res.ok) {
+                alert("¡Registro exitoso! Revisa tu correo para el código de activación.");
+                window.location.href = 'verificar.html';
+            } else {
+                alert("Error: El correo ya está registrado.");
+            }
+        }
+    </script>
+</body>
+</html>

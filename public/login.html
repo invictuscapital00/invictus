@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Invictus | Login</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .box { background: #161616; padding: 30px; border-radius: 15px; width: 300px; }
+        .pass-container { position: relative; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; }
+        .eye { position: absolute; right: 10px; top: 15px; cursor: pointer; color: #00ff88; }
+        button { width: 100%; padding: 10px; background: #00ff88; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>LOGIN</h2>
+        <input type="email" id="email" placeholder="Email">
+        <div class="pass-container">
+            <input type="password" id="password" placeholder="Contraseña">
+            <span class="eye" onclick="togglePass()">👁️</span>
+        </div>
+        <button onclick="login()">ENTRAR</button>
+    </div>
+    <script>
+        function togglePass() {
+            const p = document.getElementById('password');
+            p.type = p.type === 'password' ? 'text' : 'password';
+        }
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch('http://localhost:3000/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ email, password })
+            });
+            if(res.ok) {
+                const data = await res.json();
+                localStorage.setItem('usuarioId', data.usuario.id);
+                localStorage.setItem('usuarioNombre', data.usuario.nombre);
+                location.href='index.html';
+            } else { alert("Error de acceso"); }
+        }
+    </script>
+</body>
+</html>

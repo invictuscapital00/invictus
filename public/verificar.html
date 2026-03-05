@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Cuenta - Daxen Mundial</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #2a2a2a; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; width: 350px; }
+        h2 { color: #00ff88; }
+        input { width: 80%; padding: 10px; margin: 20px 0; border-radius: 5px; border: none; font-size: 1.2rem; text-align: center; letter-spacing: 5px; }
+        button { background: #00ff88; color: #1a1a1a; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
+        button:hover { background: #00cc6e; }
+        .info { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Validación Daxen</h2>
+    <p class="info">Ingresa el código de 6 dígitos que enviamos a tu correo para activar tu cuenta.</p>
+    <input type="text" id="codigo" placeholder="000000" maxlength="6">
+    <button onclick="verificarCodigo()">Activar Cuenta</button>
+</div>
+
+<script>
+    async function verificarCodigo() {
+        const codigo = document.getElementById('codigo').value;
+        const email = localStorage.getItem('emailPendiente'); // Recuperamos el email del registro
+
+        if (!codigo || codigo.length < 6) {
+            alert("Por favor ingresa los 6 dígitos");
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:3000/api/verificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, codigo })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert("¡Cuenta activada con éxito!");
+                localStorage.removeItem('emailPendiente');
+                window.location.href = 'login.html';
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            alert("Error de conexión con el servidor");
+        }
+    }
+</script>
+
+</body>
+</html>

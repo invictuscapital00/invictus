@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Proyecto 100K</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            border: 1px solid #334155;
+            width: 380px;
+        }
+        .user-info h2 { color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .user-info p { color: #64748b; margin: 0; }
+        h1 { font-size: 3rem; color: #10b981; margin: 1rem 0; }
+        
+        .btn-principal {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 0.7rem;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-principal:hover { background-color: #2563eb; transform: translateY(-2px); }
+        
+        .btn-logout {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+        
+        .ref-box {
+            margin-top: 1.5rem;
+            padding: 10px;
+            background: #0f172a;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="user-info">
+            <h2 id="nombre-usuario">Verificando sesión...</h2>
+            <p>Saldo Disponible</p>
+            <h1 id="saldo-display">$0.00 USDT</h1>
+        </div>
+
+        <button class="btn-principal" id="btn-reclamar">RECOGER GANANCIA DIARIA</button>
+        
+        <div class="ref-box">
+            Mi Código: <span id="mi-codigo" style="font-weight: bold; color: white;">---</span>
+        </div>
+
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión segura</button>
+    </div>
+
+    <script>
+        // 1. SEGURIDAD: Obtener el ID del usuario desde el almacenamiento local (Login)
+        const usuarioId = localStorage.getItem('usuarioId');
+
+        // Si no hay ID, significa que no ha iniciado sesión, lo mandamos al login
+        if (!usuarioId) {
+            window.location.href = "login.html";
+        }
+
+        // 2. Función para cargar los datos del usuario logueado
+        async function actualizarPantalla() {
+            try {
+                // Consultamos la API usando el ID del usuario actual
+                const respuesta = await fetch(`/api/usuario/${usuarioId}`);
+                const datos = await respuesta.json();
+                
+                if (datos && !datos.error) {
+                    document.getElementById('nombre-usuario').innerText = `Hola, ${datos.nombre}`;
+                    document.getElementById('saldo-display').innerText = `$${parseFloat(datos.saldo_disponible).toFixed(2)} USDT`;
+                    document.getElementById('mi-codigo').innerText = datos.codigo_referido || 'SIN CODIGO';
+                } else {
+                    // Si hay error en los datos, forzamos login
+                    cerrarSesion();
+                }
+            } catch (error) {
+                console.error("Error al conectar con el servidor:", error);
+            }
+        }
+
+        // 3. Lógica del botón para sumar dinero
+        document.getElementById('btn-reclamar').onclick = async () => {
+            try {
+                const res = await fetch('/api/reclamar', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Enviamos el ID del usuario para que sepa a QUIÉN sumarle el dinero
+                    body: JSON.stringify({ usuarioId: usuarioId })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    actualizarPantalla(); // Actualiza el saldo en vivo
+                } else {
+                    alert("Error: " + data.mensaje);
+                }
+            } catch (error) {
+                alert("Sin conexión con el servidor");
+            }
+        };
+
+        function cerrarSesion() {
+            localStorage.removeItem('usuarioId');
+            window.location.href = "login.html";
+        }
+
+        // Ejecutar carga inicial
+        actualizarPantalla();
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial | Invictus Capital</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        
+        h2 { color: #00ff88; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        
+        .filters { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filter-btn { background: #161616; color: #888; border: 1px solid #333; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .filter-btn.active { border-color: #00ff88; color: #00ff88; }
+
+        .history-list { background: #161616; border-radius: 15px; border: 1px solid #222; overflow: hidden; }
+        
+        .transaction-item { 
+            display: grid; grid-template-columns: 50px 1fr 1fr 100px; 
+            padding: 15px; border-bottom: 1px solid #222; align-items: center;
+            transition: 0.3s;
+        }
+        .transaction-item:hover { background: #1d1d1d; }
+
+        .icon { font-size: 1.2rem; text-align: center; }
+        .details { display: flex; flex-direction: column; }
+        .type { font-weight: bold; font-size: 0.9rem; }
+        .date { font-size: 0.75rem; color: #666; }
+        .hash { font-family: monospace; font-size: 0.7rem; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .amount { text-align: right; font-weight: bold; }
+
+        .positive { color: #00ff88; }
+        .negative { color: #ff4d4d; }
+        .bonus { color: #00d2ff; }
+
+        .back-link { display: block; margin-top: 30px; color: #666; text-decoration: none; font-size: 0.9rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Libro de Movimientos</h2>
+    
+    <div class="filters">
+        <button class="filter-btn active">Todos</button>
+        <button class="filter-btn">Depósitos</button>
+        <button class="filter-btn">Retiros</button>
+        <button class="filter-btn">Bonos</button>
+    </div>
+
+    <div class="history-list" id="contenedor-historial">
+        <p style="padding: 20px; color: #444; text-align: center;">Cargando registros...</p>
+    </div>
+
+    <a href="index.html" class="back-link">← Volver al Dashboard</a>
+</div>
+
+<script>
+    window.onload = async () => {
+        const id = localStorage.getItem('usuarioId');
+        if(!id) return window.location.href = 'login.html';
+
+        try {
+            const res = await fetch(`http://localhost:3000/api/historial/${id}`);
+            const transacciones = await res.json();
+            
+            const contenedor = document.getElementById('contenedor-historial');
+            
+            if (transacciones.length === 0) {
+                contenedor.innerHTML = "<p style='padding: 40px; color: #444; text-align: center;'>No se encontraron transacciones registradas.</p>";
+                return;
+            }
+
+            contenedor.innerHTML = "";
+            transacciones.forEach(t => {
+                let icon, colorClass, prefix;
+                
+                if (t.tipo === 'Deposito') {
+                    icon = "📥"; colorClass = "positive"; prefix = "+";
+                } else if (t.tipo === 'Retiro') {
+                    icon = "💸"; colorClass = "negative"; prefix = "-";
+                } else if (t.tipo === 'Bono') {
+                    icon = "🎁"; colorClass = "bonus"; prefix = "+";
+                }
+
+                const fecha = new Date(t.fecha).toLocaleDateString('es-ES', {
+                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                contenedor.innerHTML += `
+                    <div class="transaction-item">
+                        <div class="icon">${icon}</div>
+                        <div class="details">
+                            <span class="type">${t.tipo === 'Bono' ? 'Bono de Red' : t.tipo}</span>
+                            <span class="date">${fecha}</span>
+                        </div>
+                        <div class="hash">REF: ${t._id.substring(18)}...</div>
+                        <div class="amount ${colorClass}">${prefix}${t.monto.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            console.error("Error al cargar historial:", error);
+        }
+    };
+</script>
+
+</body>
+</html>

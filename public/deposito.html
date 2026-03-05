@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Invertir | Invictus</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: #161616; padding: 30px; border-radius: 20px; border: 1px solid #00ff88; width: 400px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        .btn-m { background: #222; border: 1px solid #444; color: white; padding: 10px; cursor: pointer; border-radius: 5px; }
+        button.main { width: 100%; padding: 15px; background: #00ff88; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>INVERTIR CAPITAL</h3>
+        <div class="grid">
+            <button class="btn-m" onclick="document.getElementById('m').value=100">100</button>
+            <button class="btn-m" onclick="document.getElementById('m').value=500">500</button>
+            <button class="btn-m" onclick="document.getElementById('m').value=1000">1k</button>
+            <button class="btn-m" onclick="document.getElementById('m').value=5000">5k</button>
+        </div>
+        <input type="number" id="m" placeholder="Monto (Min 10 USDT)">
+        <p style="font-size:0.7rem; color:#666">ENVÍA A:</p>
+        <div style="background:#000; padding:10px; font-size:0.7rem; color:#00ff88; border:1px dashed #333">TXfy5h2E1QZsdZuBp3u2iqUYyKpzK5sEqH (TRC20)</div>
+        <input type="text" id="h" placeholder="Hash de Transacción">
+        <button class="main" onclick="confirmar()">CONFIRMAR DEPÓSITO</button>
+        <a href="index.html" style="color:#444; display:block; margin-top:15px; text-decoration:none">← Volver</a>
+    </div>
+    <script>
+        async function confirmar() {
+            const monto = parseFloat(document.getElementById('m').value);
+            const hash = document.getElementById('h').value;
+            if(monto < 10) return alert("Mínimo 10 USDT");
+            const res = await fetch('http://localhost:3000/api/notificar-deposito', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nombre: localStorage.getItem('usuarioNombre'), monto, hash })
+            });
+            if(res.ok) { alert("Notificación enviada"); location.href='index.html'; }
+        }
+    </script>
+</body>
+</html>

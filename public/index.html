@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Invictus | Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --green: #00ff88; --blue: #00d2ff; --glass: rgba(255,255,255,0.03); }
+        body { background: radial-gradient(circle at top right, #0a1f16, #050505); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; transition: 0.3s; margin-top: 20px; }
+        .balance { font-size: 3rem; font-weight: bold; color: white; margin: 10px 0; }
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-main { background: var(--green); color: black; }
+        .rank-tag { font-size: 0.6rem; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: block; margin-top: 5px; text-align: center; }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <h2>INVICTUS</h2>
+        <div onclick="location.href='perfil.html'" style="cursor:pointer; display:flex; align-items:center; gap:10px;">
+            <div style="text-align:right">
+                <span id="u-name" style="font-weight:bold">Cargando...</span>
+                <span id="u-rank" class="rank-tag">Inversionista</span>
+            </div>
+            <div id="r-icon" style="width:35px; height:35px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black;">👤</div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div>
+            <div class="glass-card">
+                <small style="color:#666">CAPITAL EN GESTIÓN</small>
+                <div class="balance" id="saldo">0.00</div>
+                <button class="btn btn-main" onclick="location.href='deposito.html'">Inyectar Capital</button>
+            </div>
+            <div class="glass-card" style="height:300px">
+                <canvas id="pChart"></canvas>
+            </div>
+        </div>
+        <div>
+            <div class="glass-card">
+                <small style="color:#666">BONOS DE RED</small>
+                <div class="balance" style="font-size:2rem; color:var(--blue)" id="comis">0.00</div>
+                <button class="btn" style="background:transparent; border:1px solid var(--blue); color:var(--blue); width:100%" onclick="location.href='red.html'">Ver Mi Equipo</button>
+            </div>
+            <div class="glass-card">
+                <small>INVITACIÓN</small>
+                <div id="ref-link" style="background:#000; padding:10px; font-size:0.7rem; color:var(--green); margin:10px 0; cursor:pointer" onclick="copy()">Cargando...</div>
+                <button class="btn" style="width:100%; font-size:0.7rem; background:#222; color:white" onclick="location.href='marketing.html'">Flyers de Red</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setRank(bal) {
+            const tag = document.getElementById('u-rank');
+            const icon = document.getElementById('r-icon');
+            if(bal < 500) { tag.innerText = "Inversionista"; tag.style.color = "#888"; icon.innerText="👤"; }
+            else if(bal < 2000) { tag.innerText = "Socio Bronce"; tag.style.color = "#cd7f32"; icon.innerText="🥉"; }
+            else if(bal < 10000) { tag.innerText = "Líder Plata"; tag.style.color = "#c0c0c0"; icon.innerText="🥈"; }
+            else { tag.innerText = "Embajador Oro"; tag.style.color = "#ffd700"; icon.innerText="🥇"; }
+        }
+
+        window.onload = async () => {
+            const id = localStorage.getItem('usuarioId');
+            if(!id) location.href='login.html';
+            document.getElementById('u-name').innerText = localStorage.getItem('usuarioNombre');
+            document.getElementById('ref-link').innerText = `${window.location.origin}/registro.html?ref=${localStorage.getItem('usuarioNombre')}`;
+            
+            const res = await fetch(`http://localhost:3000/api/usuario/${id}`);
+            const data = await res.json();
+            document.getElementById('saldo').innerText = data.balance_usdt.toFixed(2);
+            document.getElementById('comis').innerText = data.comisiones.toFixed(2);
+            setRank(data.balance_usdt);
+            initChart(data.balance_usdt);
+        };
+
+        function initChart(bal) {
+            const ctx = document.getElementById('pChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun','Mar','Mie','Jue','Vie','Sab','Hoy'],
+                    datasets: [{
+                        data: [bal*0.9, bal*0.92, bal*0.95, bal*0.94, bal*0.97, bal*0.99, bal],
+                        borderColor: '#00ff88', tension: 0.4, fill: true, backgroundColor: 'rgba(0,255,136,0.1)'
+                    }]
+                },
+                options: { plugins:{legend:{display:false}}, scales:{y:{display:false}, x:{grid:{display:false}}} }
+            });
+        }
+    </script>
+</body>
+</html>

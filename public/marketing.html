@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing | Invictus Capital</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; text-align: center; }
+        
+        h2 { color: #00ff88; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+        
+        .marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        
+        .mkt-card { background: #161616; border-radius: 15px; border: 1px solid #222; overflow: hidden; transition: 0.3s; }
+        .mkt-card:hover { border-color: #00ff88; transform: translateY(-5px); }
+        
+        .mkt-img { width: 100%; height: 200px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #444; }
+        
+        .mkt-info { padding: 20px; }
+        .mkt-title { display: block; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        
+        .btn-download { background: #00ff88; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn-download:hover { background: #00cc6e; }
+
+        .back-link { display: block; margin-top: 40px; color: #666; text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Centro de Marketing</h2>
+    <p style="color: #888; margin-bottom: 40px;">Herramientas oficiales para expandir tu red Invictus.</p>
+
+    <div class="marketing-grid">
+        <div class="mkt-card">
+            <div class="mkt-img" style="background: linear-gradient(45deg, #000, #161616); border-bottom: 1px solid #333;">
+                <h3 style="color: #00ff88;">FLYER OFICIAL v1</h3>
+            </div>
+            <div class="mkt-info">
+                <span class="mkt-title">Flyer de Presentación</span>
+                <p style="font-size: 0.8rem; color: #666;">Ideal para estados de WhatsApp e Historias de IG.</p>
+                <a href="#" class="btn-download">Descargar PNG</a>
+            </div>
+        </div>
+
+        <div class="mkt-card">
+            <div class="mkt-img" style="background: linear-gradient(45deg, #0a0a0a, #00ff8822);">
+                <h3 style="color: #00d2ff;">TABLA RENDIMIENTO</h3>
+            </div>
+            <div class="mkt-info">
+                <span class="mkt-title">Tabla Interés Compuesto</span>
+                <p style="font-size: 0.8rem; color: #666;">Muestra el poder del crecimiento a 12 meses.</p>
+                <a href="#" class="btn-download">Descargar PDF</a>
+            </div>
+        </div>
+
+        <div class="mkt-card">
+            <div class="mkt-img">
+                <img src="logo.png" alt="Logo Invictus" style="max-width: 80px; opacity: 0.5;">
+            </div>
+            <div class="mkt-info">
+                <span class="mkt-title">Logotipo Transparente</span>
+                <p style="font-size: 0.8rem; color: #666;">Para crear tu propio material personalizado.</p>
+                <a href="#" class="btn-download">Descargar PNG</a>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← Volver al Dashboard</a>
+</div>
+
+</body>
+</html>
