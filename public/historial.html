@@ -62,7 +62,7 @@
         if(!id) return window.location.href = 'login.html';
 
         try {
-            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/historial/${id}`);
+            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../${id}`);
             const transacciones = await res.json();
             
             const contenedor = document.getElementById('contenedor-historial');

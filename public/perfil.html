@@ -46,7 +46,7 @@
     const id = localStorage.getItem('usuarioId');
 
     window.onload = async () => {
-        const res = await fetch(`http://invictuscapital00.github.io/invictus/api/admin/usuarios`); // Usamos esta ruta para jalar info
+        const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../usuarios`); // Usamos esta ruta para jalar info
         const usuarios = await res.json();
         const yo = usuarios.find(u => u._id === id);
         
@@ -60,7 +60,7 @@
         const nombre = document.getElementById('new-nombre').value;
         const password = document.getElementById('new-pass').value;
 
-        const res = await fetch(`http://invictuscapital00.github.io/invictus/api/usuario/actualizar/${id}`, {
+        const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../actualizar/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, password: password || undefined })

@@ -69,7 +69,7 @@
         if (!nombreUsuario) return window.location.href = 'login.html';
 
         try {
-            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/red/${nombreUsuario}`);
+            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../${nombreUsuario}`);
             const socios = await res.json();
             
             const tabla = document.getElementById('tabla-red');

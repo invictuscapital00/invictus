@@ -69,7 +69,7 @@
 
             if(!nombre || !email || !password) return alert("Completa todos los campos");
 
-            const res = await fetch('http://invictuscapital00.github.io/invictus/api/registro', {
+            const res = await fetch('http://invictuscapital00.github.io/invictus/api/...', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ nombre, email, password, referidoPor })

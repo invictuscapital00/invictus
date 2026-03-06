@@ -44,7 +44,7 @@
 
         if(!monto || !billetera) return alert("Por favor, completa todos los campos.");
 
-        const res = await fetch('http://invictuscapital00.github.io/invictus/api/retiro', {
+        const res = await fetch('http://invictuscapital00.github.io/invictus/api/...', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ usuarioId: id, monto, billetera })
