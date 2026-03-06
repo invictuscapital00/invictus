@@ -33,7 +33,7 @@
             const monto = parseFloat(document.getElementById('m').value);
             const hash = document.getElementById('h').value;
             if(monto < 10) return alert("Mínimo 10 USDT");
-            const res = await fetch('http://localhost:3000/api/notificar-deposito', {
+            const res = await fetch('http://invictuscapital00.github.io/invictus/api/notificar-deposito', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ nombre: localStorage.getItem('usuarioNombre'), monto, hash })
