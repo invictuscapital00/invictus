@@ -5,35 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Red | Invictus Capital</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; }
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: auto; }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00ff88; padding-bottom: 15px; margin-bottom: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--neon-green); padding-bottom: 15px; margin-bottom: 30px; }
         h1 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
         
         .stats-red { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: #161616; padding: 20px; border-radius: 12px; border: 1px solid #222; text-align: center; }
-        .stat-number { display: block; font-size: 2rem; color: #00ff88; font-weight: bold; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #222; text-align: center; }
+        .stat-number { display: block; font-size: 2rem; color: var(--neon-green); font-weight: bold; }
         .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
 
-        table { width: 100%; border-collapse: collapse; background: #161616; border-radius: 12px; overflow: hidden; border: 1px solid #222; }
+        .table-container { overflow-x: auto; background: var(--card); border-radius: 12px; border: 1px solid #222; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #222; }
-        th { background: #00ff88; color: #000; font-size: 0.8rem; text-transform: uppercase; }
+        th { background: var(--neon-green); color: #000; font-size: 0.8rem; text-transform: uppercase; }
         tr:hover { background: #1a1a1a; }
         
-        .back-link { color: #888; text-decoration: none; font-size: 0.9rem; margin-bottom: 20px; display: inline-block; }
-        .back-link:hover { color: #00ff88; }
+        .back-link { color: #888; text-decoration: none; font-size: 0.9rem; margin-bottom: 20px; display: inline-block; transition: 0.3s; }
+        .back-link:hover { color: var(--neon-green); }
         
-        .empty-msg { text-align: center; padding: 40px; color: #444; }
+        .empty-msg { text-align: center; padding: 40px; color: #444; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <a href="index.html" class="back-link">← Volver al Dashboard</a>
+    <a href="https://invictuscapital00.github.io/invictus/index.html" class="back-link">← Volver al Dashboard</a>
     
     <div class="header">
-        <h1>Mi Linaje <span style="color: #00ff88;">Invictus</span></h1>
+        <h1>Mi Linaje <span style="color: var(--neon-green);">Invictus</span></h1>
     </div>
 
     <div class="stats-red">
@@ -43,34 +45,48 @@
         </div>
         <div class="stat-card">
             <span class="stat-number" id="capital-red">0.00</span>
-            <span class="stat-label">Capital en Red (USDT)</span>
+            <span class="stat-label">Aporte en Red (USDT)</span>
         </div>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Socio</th>
-                <th>Fecha de Ingreso</th>
-                <th>Inversión</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-red">
-            </tbody>
-    </table>
-    <div id="mensaje-vacio" class="empty-msg" style="display: none;">
-        Aún no tienes socios en tu red. ¡Comparte tu enlace para ganar el 10%!
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Socio</th>
+                    <th>Fecha de Ingreso</th>
+                    <th>Aporte Colaborativo</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-red"></tbody>
+        </table>
+        <div id="mensaje-vacio" class="empty-msg" style="display: none;">
+            Aún no tienes socios en tu red. ¡Comparte tu enlace para ganar recompensas!
+        </div>
     </div>
 </div>
 
 <script>
+    const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+
     window.onload = async () => {
         const nombreUsuario = localStorage.getItem('usuarioNombre');
-        if (!nombreUsuario) return window.location.href = 'login.html';
+        
+        // Si no hay sesión, redirige al login
+        if (!nombreUsuario) {
+            window.location.href = `${BASE_URL}/login.html`;
+            return;
+        }
 
         try {
-            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../${nombreUsuario}`);
-            const socios = await res.json();
+            // Intentamos cargar desde la API o archivo JSON en tu repo
+            const res = await fetch(`${BASE_URL}/redes.json`);
+            if (!res.ok) throw new Error("No se pudo conectar");
+
+            const todasLasRedes = await res.json();
+            
+            // Filtramos los socios que pertenecen al usuario logueado
+            const socios = todasLasRedes.filter(s => s.lider === nombreUsuario);
             
             const tabla = document.getElementById('tabla-red');
             const totalSocios = document.getElementById('total-socios');
@@ -85,13 +101,18 @@
 
             let sumaCapital = 0;
             socios.forEach(s => {
-                sumaCapital += s.balance_usdt;
-                const fecha = new Date(s.fechaRegistro).toLocaleDateString();
+                const monto = s.balance_usdt || 0;
+                sumaCapital += monto;
+                
+                // Formateamos fecha (si no existe usamos la actual para la vista)
+                const fechaRaw = s.fechaRegistro || new Date().toISOString();
+                const fecha = new Date(fechaRaw).toLocaleDateString();
+
                 tabla.innerHTML += `
                     <tr>
                         <td><strong>${s.nombre}</strong></td>
                         <td style="color: #888;">${fecha}</td>
-                        <td style="color: #00ff88;">${s.balance_usdt.toFixed(2)} USDT</td>
+                        <td style="color: var(--neon-green); font-weight: bold;">$${monto.toFixed(2)} USDT</td>
                     </tr>
                 `;
             });
@@ -99,7 +120,9 @@
             capitalRed.innerText = sumaCapital.toFixed(2);
 
         } catch (err) {
-            console.error("Error cargando la red.");
+            console.error("Error cargando la red:", err);
+            document.getElementById('mensaje-vacio').innerText = "Conectando con el sistema de linaje...";
+            document.getElementById('mensaje-vacio').style.display = 'block';
         }
     };
 </script>

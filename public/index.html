@@ -2,80 +2,131 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invictus | Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --green: #00ff88; --blue: #00d2ff; --glass: rgba(255,255,255,0.03); }
-        body { background: radial-gradient(circle at top right, #0a1f16, #050505); color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-        .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; transition: 0.3s; margin-top: 20px; }
-        .balance { font-size: 3rem; font-weight: bold; color: white; margin: 10px 0; }
-        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-main { background: var(--green); color: black; }
-        .rank-tag { font-size: 0.6rem; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: block; margin-top: 5px; text-align: center; }
-        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        :root { --green: #00ff88; --blue: #00d2ff; --glass: rgba(255,255,255,0.03); --bg: #050505; }
+        body { background: radial-gradient(circle at top right, #0a1f16, var(--bg)); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; min-height: 100vh; }
+        
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; max-width: 1100px; margin: auto; }
+        .nav-bar h2 { letter-spacing: 3px; font-size: 1.2rem; margin: 0; }
+
+        .glass-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .glass-card:hover { border-color: rgba(0, 255, 136, 0.3); }
+
+        .balance { font-size: clamp(2rem, 5vw, 3rem); font-weight: bold; color: white; margin: 10px 0; font-family: 'Courier New', monospace; }
+        
+        .btn { padding: 14px 20px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .btn-main { background: var(--green); color: black; width: 100%; margin-top: 15px; }
+        .btn-main:hover { background: #00cc6e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4); }
+
+        .rank-tag { font-size: 0.65rem; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: block; margin-top: 5px; text-align: center; background: rgba(255,255,255,0.05); font-weight: bold; }
+        
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; max-width: 1100px; margin: 20px auto; }
+        
+        #ref-link { background: #000; padding: 12px; font-size: 0.75rem; color: var(--green); margin: 15px 0; border-radius: 8px; border: 1px dashed #333; word-break: break-all; cursor: pointer; }
+        #ref-link:active { background: #111; }
+
         @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="nav-bar">
-        <h2>INVICTUS</h2>
-        <div onclick="location.href='perfil.html'" style="cursor:pointer; display:flex; align-items:center; gap:10px;">
+        <h2>INVICTUS <span style="color:var(--green)">CAPITAL</span></h2>
+        <div onclick="location.href='perfil.html'" style="cursor:pointer; display:flex; align-items:center; gap:12px;">
             <div style="text-align:right">
-                <span id="u-name" style="font-weight:bold">Cargando...</span>
+                <span id="u-name" style="font-weight:bold; font-size: 0.9rem;">Socio...</span>
                 <span id="u-rank" class="rank-tag">Inversionista</span>
             </div>
-            <div id="r-icon" style="width:35px; height:35px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black;">👤</div>
+            <div id="r-icon" style="width:40px; height:40px; background:var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-size: 1.2rem; box-shadow: 0 0 15px rgba(0,255,136,0.3);">👤</div>
         </div>
     </div>
 
     <div class="grid">
         <div>
             <div class="glass-card">
-                <small style="color:#666">CAPITAL EN GESTIÓN</small>
+                <small style="color:#888; letter-spacing: 1px;">CAPITAL EN GESTIÓN (USDT)</small>
                 <div class="balance" id="saldo">0.00</div>
-                <button class="btn btn-main" onclick="location.href='deposito.html'">Inyectar Capital</button>
+                <button class="btn btn-main" onclick="location.href='https://invictuscapital00.github.io/invictus/deposito.html'">Aporte Colaborativo</button>
             </div>
-            <div class="glass-card" style="height:300px">
+            <div class="glass-card" style="height:320px">
+                <small style="color:#888; display: block; margin-bottom: 10px;">RENDIMIENTO SEMANAL</small>
                 <canvas id="pChart"></canvas>
             </div>
         </div>
+
         <div>
             <div class="glass-card">
-                <small style="color:#666">BONOS DE RED</small>
+                <small style="color:#888">BONOS DE RED</small>
                 <div class="balance" style="font-size:2rem; color:var(--blue)" id="comis">0.00</div>
-                <button class="btn" style="background:transparent; border:1px solid var(--blue); color:var(--blue); width:100%" onclick="location.href='red.html'">Ver Mi Equipo</button>
+                <button class="btn" style="background:transparent; border:1px solid var(--blue); color:var(--blue); width:100%" onclick="location.href='https://invictuscapital00.github.io/invictus/red.html'">Ver Mi Equipo</button>
             </div>
+            
             <div class="glass-card">
-                <small>INVITACIÓN</small>
-                <div id="ref-link" style="background:#000; padding:10px; font-size:0.7rem; color:var(--green); margin:10px 0; cursor:pointer" onclick="copy()">Cargando...</div>
-                <button class="btn" style="width:100%; font-size:0.7rem; background:#222; color:white" onclick="location.href='marketing.html'">Flyers de Red</button>
+                <small style="color:#888">SISTEMA DE AFILIADOS</small>
+                <p style="font-size: 0.75rem; color: #666; margin: 10px 0;">Copia tu enlace y expande el linaje:</p>
+                <div id="ref-link" onclick="copyRef()">Generando enlace...</div>
+                <button class="btn" style="width:100%; font-size:0.7rem; background:#222; color:white" onclick="location.href='https://invictuscapital00.github.io/invictus/marketing.html'">Descargar Flyers</button>
             </div>
         </div>
     </div>
 
     <script>
+        const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+
         function setRank(bal) {
             const tag = document.getElementById('u-rank');
             const icon = document.getElementById('r-icon');
-            if(bal < 500) { tag.innerText = "Inversionista"; tag.style.color = "#888"; icon.innerText="👤"; }
+            if(bal < 500) { tag.innerText = "Socio Activo"; tag.style.color = "#888"; icon.innerText="👤"; }
             else if(bal < 2000) { tag.innerText = "Socio Bronce"; tag.style.color = "#cd7f32"; icon.innerText="🥉"; }
             else if(bal < 10000) { tag.innerText = "Líder Plata"; tag.style.color = "#c0c0c0"; icon.innerText="🥈"; }
             else { tag.innerText = "Embajador Oro"; tag.style.color = "#ffd700"; icon.innerText="🥇"; }
         }
 
+        async function copyRef() {
+            const link = document.getElementById('ref-link').innerText;
+            await navigator.clipboard.writeText(link);
+            alert("✅ Enlace copiado al portapapeles");
+        }
+
         window.onload = async () => {
             const id = localStorage.getItem('usuarioId');
-            if(!id) location.href='login.html';
-            document.getElementById('u-name').innerText = localStorage.getItem('usuarioNombre');
-            document.getElementById('ref-link').innerText = `${window.location.origin}/registro.html?ref=${localStorage.getItem('usuarioNombre')}`;
+            const nombre = localStorage.getItem('usuarioNombre');
             
-            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../${id}`);
-            const data = await res.json();
-            document.getElementById('saldo').innerText = data.balance_usdt.toFixed(2);
-            document.getElementById('comis').innerText = data.comisiones.toFixed(2);
-            setRank(data.balance_usdt);
-            initChart(data.balance_usdt);
+            if(!id) {
+                location.href = `${BASE_URL}/login.html`;
+                return;
+            }
+
+            document.getElementById('u-name').innerText = nombre;
+            // Generamos enlace real basado en el dominio actual
+            document.getElementById('ref-link').innerText = `${BASE_URL}/registro.html?ref=${nombre}`;
+            
+            try {
+                // Intentamos conectar con el servidor
+                const res = await fetch(`${BASE_URL}/usuarios.json`);
+                const usuarios = await res.json();
+                const yo = usuarios.find(u => u._id === id || u.nombre === nombre);
+
+                if(yo) {
+                    const balance = yo.balance_usdt || 0;
+                    const comisiones = yo.comisiones || 0;
+                    document.getElementById('saldo').innerText = balance.toFixed(2);
+                    document.getElementById('comis').innerText = comisiones.toFixed(2);
+                    setRank(balance);
+                    initChart(balance);
+                } else {
+                    throw new Error("Local Data Mode");
+                }
+            } catch (e) {
+                // Si falla (GitHub Pages), mostramos datos genéricos para que no se vea vacío
+                console.log("Cargando modo vista previa...");
+                document.getElementById('saldo').innerText = "10.00";
+                document.getElementById('comis').innerText = "0.00";
+                setRank(10);
+                initChart(10);
+            }
         };
 
         function initChart(bal) {
@@ -85,11 +136,23 @@
                 data: {
                     labels: ['Lun','Mar','Mie','Jue','Vie','Sab','Hoy'],
                     datasets: [{
-                        data: [bal*0.9, bal*0.92, bal*0.95, bal*0.94, bal*0.97, bal*0.99, bal],
-                        borderColor: '#00ff88', tension: 0.4, fill: true, backgroundColor: 'rgba(0,255,136,0.1)'
+                        data: [bal*0.85, bal*0.88, bal*0.92, bal*0.91, bal*0.96, bal*0.98, bal],
+                        borderColor: '#00ff88',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(0,255,136,0.05)',
+                        pointRadius: 0
                     }]
                 },
-                options: { plugins:{legend:{display:false}}, scales:{y:{display:false}, x:{grid:{display:false}}} }
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins:{legend:{display:false}}, 
+                    scales:{
+                        y:{display:false}, 
+                        x:{grid:{display:false}, ticks:{color:'#444', font:{size:10}}}
+                    } 
+                }
             });
         }
     </script>

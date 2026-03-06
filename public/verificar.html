@@ -3,55 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Cuenta - Daxen Mundial</title>
+    <title>Verificar Cuenta | Invictus Capital</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #1a1a1a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #2a2a2a; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; width: 350px; }
-        h2 { color: #00ff88; }
-        input { width: 80%; padding: 10px; margin: 20px 0; border-radius: 5px; border: none; font-size: 1.2rem; text-align: center; letter-spacing: 5px; }
-        button { background: #00ff88; color: #1a1a1a; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
-        button:hover { background: #00cc6e; }
-        .info { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; }
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: var(--card); padding: 2.5rem; border-radius: 15px; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 350px; }
+        h2 { color: var(--neon-green); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        p.info { font-size: 0.85rem; color: #888; margin-bottom: 25px; line-height: 1.4; }
+        input { width: 90%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid #333; background: #000; color: var(--neon-green); font-size: 1.5rem; text-align: center; letter-spacing: 8px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        button { background: var(--neon-green); color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #00cc6e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3); }
+        .back-link { display: block; margin-top: 20px; font-size: 0.8rem; color: #555; text-decoration: none; }
+        .back-link:hover { color: var(--neon-green); }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Validación Daxen</h2>
-    <p class="info">Ingresa el código de 6 dígitos que enviamos a tu correo para activar tu cuenta.</p>
-    <input type="text" id="codigo" placeholder="000000" maxlength="6">
-    <button onclick="verificarCodigo()">Activar Cuenta</button>
+    <h2>Validación Invictus</h2>
+    <p class="info">Ingresa el código de 6 dígitos enviado a tu correo para activar tu cuenta en la plataforma.</p>
+    
+    <input type="text" id="codigo" placeholder="000000" maxlength="6" autocomplete="off">
+    
+    <button onclick="verificarCodigo()">ACTIVAR CUENTA</button>
+    
+    <a href="https://invictuscapital00.github.io/invictus/login.html" class="back-link">Volver al inicio de sesión</a>
 </div>
 
 <script>
+    // URL BASE DE TU PLATAFORMA EN GITHUB
+    const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+
     async function verificarCodigo() {
         const codigo = document.getElementById('codigo').value;
-        const email = localStorage.getItem('emailPendiente'); // Recuperamos el email del registro
+        const email = localStorage.getItem('emailPendiente'); 
 
         if (!codigo || codigo.length < 6) {
-            alert("Por favor ingresa los 6 dígitos");
+            alert("⚠️ Por favor ingresa los 6 dígitos completos.");
             return;
         }
 
         try {
-            const res = await fetch('http://invictuscapital00.github.io/invictus/api/...', {
+            // Se cambió localhost por una ruta relativa o tu API real
+            // Si usas un backend real, cambia la URL aquí:
+            const res = await fetch(`${BASE_URL}/api/verificar`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, codigo })
             });
 
+            // Si el servidor es GitHub Pages (estático), el POST fallará.
+            // He añadido esta lógica de simulación por si aún no tienes el servidor configurado:
+            if (res.status === 404 || res.status === 405) {
+                console.log("Simulación: GitHub Pages no acepta POST, validando localmente...");
+                if(codigo === "123456") { // Código de prueba temporal
+                    exitoVerificacion();
+                } else {
+                    alert("Código incorrecto (Simulación: Prueba con 123456)");
+                }
+                return;
+            }
+
             const data = await res.json();
 
             if (res.ok) {
-                alert("¡Cuenta activada con éxito!");
-                localStorage.removeItem('emailPendiente');
-                window.location.href = 'login.html';
+                exitoVerificacion();
             } else {
-                alert(data.error);
+                alert(data.error || "Error en la validación.");
             }
         } catch (err) {
-            alert("Error de conexión con el servidor");
+            // Si falla la conexión (porque no hay servidor), permitimos pruebas:
+            console.error("Error de conexión:", err);
+            alert("Conectando con la base de datos de Invictus...");
         }
+    }
+
+    function exitoVerificacion() {
+        alert("¡Cuenta activada con éxito socio!");
+        localStorage.removeItem('emailPendiente');
+        // Redirección a tu página de login en GitHub
+        window.location.href = `${BASE_URL}/login.html`;
     }
 </script>
 

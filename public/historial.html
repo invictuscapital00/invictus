@@ -5,36 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial | Invictus Capital</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; }
+        :root { --neon-green: #00ff88; --neon-blue: #00d2ff; --neon-red: #ff4d4d; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; }
         
-        h2 { color: #00ff88; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+        h2 { color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #222; padding-bottom: 10px; margin-bottom: 25px; }
         
-        .filters { display: flex; gap: 10px; margin-bottom: 20px; }
-        .filter-btn { background: #161616; color: #888; border: 1px solid #333; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
-        .filter-btn.active { border-color: #00ff88; color: #00ff88; }
+        .filters { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { background: var(--card); color: #888; border: 1px solid #333; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; white-space: nowrap; transition: 0.3s; }
+        .filter-btn.active { border-color: var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 136, 0.05); }
 
-        .history-list { background: #161616; border-radius: 15px; border: 1px solid #222; overflow: hidden; }
+        .history-list { background: var(--card); border-radius: 15px; border: 1px solid #222; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
         .transaction-item { 
-            display: grid; grid-template-columns: 50px 1fr 1fr 100px; 
-            padding: 15px; border-bottom: 1px solid #222; align-items: center;
+            display: grid; grid-template-columns: 50px 1.5fr 1fr 100px; 
+            padding: 18px; border-bottom: 1px solid #222; align-items: center;
             transition: 0.3s;
         }
         .transaction-item:hover { background: #1d1d1d; }
+        .transaction-item:last-child { border-bottom: none; }
 
-        .icon { font-size: 1.2rem; text-align: center; }
-        .details { display: flex; flex-direction: column; }
-        .type { font-weight: bold; font-size: 0.9rem; }
+        .icon { font-size: 1.3rem; text-align: center; }
+        .details { display: flex; flex-direction: column; gap: 4px; }
+        .type { font-weight: bold; font-size: 0.95rem; }
         .date { font-size: 0.75rem; color: #666; }
-        .hash { font-family: monospace; font-size: 0.7rem; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .amount { text-align: right; font-weight: bold; }
+        .hash { font-family: 'Courier New', monospace; font-size: 0.7rem; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 10px; }
+        .amount { text-align: right; font-weight: bold; font-size: 1rem; }
 
-        .positive { color: #00ff88; }
-        .negative { color: #ff4d4d; }
-        .bonus { color: #00d2ff; }
+        .positive { color: var(--neon-green); }
+        .negative { color: var(--neon-red); }
+        .bonus { color: var(--neon-blue); }
 
-        .back-link { display: block; margin-top: 30px; color: #666; text-decoration: none; font-size: 0.9rem; text-align: center; }
+        .back-link { display: block; margin-top: 30px; color: #555; text-decoration: none; font-size: 0.9rem; text-align: center; transition: 0.3s; }
+        .back-link:hover { color: var(--neon-green); }
+
+        @media (max-width: 600px) {
+            .transaction-item { grid-template-columns: 40px 1fr 80px; }
+            .hash { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -43,68 +51,99 @@
     <h2>Libro de Movimientos</h2>
     
     <div class="filters">
-        <button class="filter-btn active">Todos</button>
-        <button class="filter-btn">Depósitos</button>
-        <button class="filter-btn">Retiros</button>
-        <button class="filter-btn">Bonos</button>
+        <button class="filter-btn active" onclick="filtrar('Todos')">Todos</button>
+        <button class="filter-btn" onclick="filtrar('Deposito')">Aportes</button>
+        <button class="filter-btn" onclick="filtrar('Retiro')">Retiros</button>
+        <button class="filter-btn" onclick="filtrar('Bono')">Bonos</button>
     </div>
 
     <div class="history-list" id="contenedor-historial">
-        <p style="padding: 20px; color: #444; text-align: center;">Cargando registros...</p>
+        <p style="padding: 40px; color: #444; text-align: center;">Sincronizando movimientos...</p>
     </div>
 
-    <a href="index.html" class="back-link">← Volver al Dashboard</a>
+    <a href="https://invictuscapital00.github.io/invictus/index.html" class="back-link">← Volver al Dashboard</a>
 </div>
 
 <script>
+    const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+    let todasLasTransacciones = [];
+
     window.onload = async () => {
         const id = localStorage.getItem('usuarioId');
-        if(!id) return window.location.href = 'login.html';
+        if(!id) return window.location.href = `${BASE_URL}/login.html`;
 
         try {
-            const res = await fetch(`http://invictuscapital00.github.io/invictus/api/.../${id}`);
-            const transacciones = await res.json();
+            // Intentamos obtener el historial desde el servidor o archivo JSON
+            const res = await fetch(`${BASE_URL}/historial.json`);
+            todasLasTransacciones = await res.json();
             
-            const contenedor = document.getElementById('contenedor-historial');
-            
-            if (transacciones.length === 0) {
-                contenedor.innerHTML = "<p style='padding: 40px; color: #444; text-align: center;'>No se encontraron transacciones registradas.</p>";
-                return;
-            }
-
-            contenedor.innerHTML = "";
-            transacciones.forEach(t => {
-                let icon, colorClass, prefix;
-                
-                if (t.tipo === 'Deposito') {
-                    icon = "📥"; colorClass = "positive"; prefix = "+";
-                } else if (t.tipo === 'Retiro') {
-                    icon = "💸"; colorClass = "negative"; prefix = "-";
-                } else if (t.tipo === 'Bono') {
-                    icon = "🎁"; colorClass = "bonus"; prefix = "+";
-                }
-
-                const fecha = new Date(t.fecha).toLocaleDateString('es-ES', {
-                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
-
-                contenedor.innerHTML += `
-                    <div class="transaction-item">
-                        <div class="icon">${icon}</div>
-                        <div class="details">
-                            <span class="type">${t.tipo === 'Bono' ? 'Bono de Red' : t.tipo}</span>
-                            <span class="date">${fecha}</span>
-                        </div>
-                        <div class="hash">REF: ${t._id.substring(18)}...</div>
-                        <div class="amount ${colorClass}">${prefix}${t.monto.toFixed(2)}</div>
-                    </div>
-                `;
-            });
+            // Filtramos solo las del usuario actual
+            const misTransacciones = todasLasTransacciones.filter(t => t.usuarioId === id);
+            renderizar(misTransacciones);
 
         } catch (error) {
             console.error("Error al cargar historial:", error);
+            document.getElementById('contenedor-historial').innerHTML = 
+                "<p style='padding: 40px; color: #444; text-align: center;'>No hay movimientos recientes para mostrar.</p>";
         }
     };
+
+    function renderizar(lista) {
+        const contenedor = document.getElementById('contenedor-historial');
+        
+        if (lista.length === 0) {
+            contenedor.innerHTML = "<p style='padding: 40px; color: #444; text-align: center;'>No se encontraron transacciones en esta categoría.</p>";
+            return;
+        }
+
+        contenedor.innerHTML = "";
+        lista.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).forEach(t => {
+            let icon, colorClass, prefix, label;
+            
+            if (t.tipo === 'Deposito') {
+                icon = "📥"; colorClass = "positive"; prefix = "+"; label = "Aporte Colaborativo";
+            } else if (t.tipo === 'Retiro') {
+                icon = "💸"; colorClass = "negative"; prefix = "-"; label = "Retiro de Capital";
+            } else if (t.tipo === 'Bono') {
+                icon = "🎁"; colorClass = "bonus"; prefix = "+"; label = "Bono de Red";
+            }
+
+            const fecha = new Date(t.fecha).toLocaleDateString('es-ES', {
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+            });
+
+            contenedor.innerHTML += `
+                <div class="transaction-item">
+                    <div class="icon">${icon}</div>
+                    <div class="details">
+                        <span class="type">${label}</span>
+                        <span class="date">${fecha}</span>
+                    </div>
+                    <div class="hash">ID: ${t._id ? t._id.substring(t._id.length - 8) : 'INTERNO'}</div>
+                    <div class="amount ${colorClass}">${prefix}${t.monto.toFixed(2)}</div>
+                </div>
+            `;
+        });
+    }
+
+    function filtrar(tipo) {
+        // Actualizar botones de filtro
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.includes(tipo) || (tipo === 'Todos' && btn.innerText === 'Todos')) {
+                btn.classList.add('active');
+            }
+        });
+
+        const id = localStorage.getItem('usuarioId');
+        let filtrados = todasLasTransacciones.filter(t => t.usuarioId === id);
+        
+        if (tipo !== 'Todos') {
+            filtrados = filtrados.filter(t => t.tipo === tipo);
+        }
+        
+        renderizar(filtrados);
+    }
 </script>
 
 </body>

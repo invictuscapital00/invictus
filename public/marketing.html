@@ -5,70 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketing | Invictus Capital</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; }
+        :root { --neon-green: #00ff88; --neon-blue: #00d2ff; --bg: #0a0a0a; --card: #161616; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: auto; text-align: center; }
         
-        h2 { color: #00ff88; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+        h2 { color: var(--neon-green); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; margin-top: 40px; }
+        .subtitle { color: #888; margin-bottom: 40px; font-size: 0.9rem; }
         
-        .marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .marketing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
         
-        .mkt-card { background: #161616; border-radius: 15px; border: 1px solid #222; overflow: hidden; transition: 0.3s; }
-        .mkt-card:hover { border-color: #00ff88; transform: translateY(-5px); }
+        .mkt-card { background: var(--card); border-radius: 20px; border: 1px solid #222; overflow: hidden; transition: 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .mkt-card:hover { border-color: var(--neon-green); transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0, 255, 136, 0.1); }
         
-        .mkt-img { width: 100%; height: 200px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #444; }
+        .mkt-img { width: 100%; height: 200px; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid #222; }
         
-        .mkt-info { padding: 20px; }
-        .mkt-title { display: block; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        .mkt-info { padding: 25px; }
+        .mkt-title { display: block; font-weight: bold; margin-bottom: 10px; color: #fff; font-size: 1.1rem; }
         
-        .btn-download { background: #00ff88; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
-        .btn-download:hover { background: #00cc6e; }
+        .btn-download { background: var(--neon-green); color: black; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-download:hover { background: #00cc6e; transform: scale(1.05); }
 
-        .back-link { display: block; margin-top: 40px; color: #666; text-decoration: none; font-size: 0.9rem; }
+        .back-link { display: block; margin-top: 50px; color: #555; text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+        .back-link:hover { color: var(--neon-green); }
+
+        /* Banner de Enlace */
+        .ref-banner { background: rgba(0, 210, 255, 0.05); border: 1px solid var(--neon-blue); padding: 20px; border-radius: 15px; margin-bottom: 40px; }
+        .ref-banner h4 { margin: 0 0 10px 0; color: var(--neon-blue); font-size: 0.8rem; text-transform: uppercase; }
+        #link-display { color: #fff; font-family: monospace; font-size: 0.8rem; background: #000; padding: 10px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Centro de Marketing</h2>
-    <p style="color: #888; margin-bottom: 40px;">Herramientas oficiales para expandir tu red Invictus.</p>
+    <p class="subtitle">Herramientas oficiales para expandir tu linaje y el ecosistema Invictus.</p>
+
+    <div class="ref-banner">
+        <h4>Tu Enlace de Invitación</h4>
+        <div id="link-display" onclick="copyLink()">Cargando enlace...</div>
+        <p style="font-size: 0.7rem; color: #555; margin-top: 10px;">Haz clic en el enlace negro para copiarlo automáticamente.</p>
+    </div>
 
     <div class="marketing-grid">
         <div class="mkt-card">
-            <div class="mkt-img" style="background: linear-gradient(45deg, #000, #161616); border-bottom: 1px solid #333;">
-                <h3 style="color: #00ff88;">FLYER OFICIAL v1</h3>
+            <div class="mkt-img" style="background: linear-gradient(135deg, #000 0%, #0a2e1f 100%);">
+                <h3 style="color: var(--neon-green); margin: 0;">FLYER v1</h3>
+                <small style="color: #555;">PRESENTACIÓN</small>
             </div>
             <div class="mkt-info">
-                <span class="mkt-title">Flyer de Presentación</span>
-                <p style="font-size: 0.8rem; color: #666;">Ideal para estados de WhatsApp e Historias de IG.</p>
-                <a href="#" class="btn-download">Descargar PNG</a>
+                <span class="mkt-title">Presentación Oficial</span>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Ideal para estados de WhatsApp e Historias de Instagram.</p>
+                <a href="https://invictuscapital00.github.io/invictus/assets/flyer_v1.png" download class="btn-download">Descargar PNG</a>
             </div>
         </div>
 
         <div class="mkt-card">
-            <div class="mkt-img" style="background: linear-gradient(45deg, #0a0a0a, #00ff8822);">
-                <h3 style="color: #00d2ff;">TABLA RENDIMIENTO</h3>
+            <div class="mkt-img" style="background: linear-gradient(135deg, #000 0%, #002e3d 100%);">
+                <h3 style="color: var(--neon-blue); margin: 0;">TABLA PRO</h3>
+                <small style="color: #555;">RENDIMIENTO</small>
             </div>
             <div class="mkt-info">
-                <span class="mkt-title">Tabla Interés Compuesto</span>
-                <p style="font-size: 0.8rem; color: #666;">Muestra el poder del crecimiento a 12 meses.</p>
-                <a href="#" class="btn-download">Descargar PDF</a>
+                <span class="mkt-title">Interés Compuesto</span>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Muestra a tus socios el poder del crecimiento a 12 meses.</p>
+                <a href="https://invictuscapital00.github.io/invictus/assets/tabla_interes.pdf" download class="btn-download">Descargar PDF</a>
             </div>
         </div>
 
         <div class="mkt-card">
             <div class="mkt-img">
-                <img src="logo.png" alt="Logo Invictus" style="max-width: 80px; opacity: 0.5;">
+                <div style="border: 2px dashed #333; padding: 20px; border-radius: 50%;">
+                    <span style="font-size: 2rem;">🛡️</span>
+                </div>
             </div>
             <div class="mkt-info">
-                <span class="mkt-title">Logotipo Transparente</span>
-                <p style="font-size: 0.8rem; color: #666;">Para crear tu propio material personalizado.</p>
-                <a href="#" class="btn-download">Descargar PNG</a>
+                <span class="mkt-title">Logo Transparente</span>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">Utiliza el logo oficial para crear tu propio material de red.</p>
+                <a href="https://invictuscapital00.github.io/invictus/assets/logo_invictus.png" download class="btn-download">Descargar Logo</a>
             </div>
         </div>
     </div>
 
-    <a href="index.html" class="back-link">← Volver al Dashboard</a>
+    <a href="https://invictuscapital00.github.io/invictus/index.html" class="back-link">← Volver al Dashboard</a>
 </div>
+
+<script>
+    const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+    
+    window.onload = () => {
+        const nombre = localStorage.getItem('usuarioNombre') || 'Socio';
+        document.getElementById('link-display').innerText = `${BASE_URL}/registro.html?ref=${nombre}`;
+    };
+
+    function copyLink() {
+        const link = document.getElementById('link-display').innerText;
+        navigator.clipboard.writeText(link);
+        alert("✅ Enlace de invitación copiado. ¡Listo para compartir!");
+    }
+</script>
 
 </body>
 </html>

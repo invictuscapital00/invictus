@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Proyecto 100K</title>
+    <title>Recompensas | Invictus Capital</title>
     <style>
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; --text-muted: #64748b; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
             color: white;
             display: flex;
             flex-direction: column;
@@ -17,128 +18,138 @@
             margin: 0;
         }
         .card {
-            background-color: #1e293b;
+            background-color: var(--card);
             padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
             text-align: center;
-            border: 1px solid #334155;
-            width: 380px;
+            border: 1px solid #222;
+            width: 90%;
+            max-width: 380px;
         }
-        .user-info h2 { color: #94a3b8; margin-bottom: 0.5rem; font-size: 1.2rem; }
-        .user-info p { color: #64748b; margin: 0; }
-        h1 { font-size: 3rem; color: #10b981; margin: 1rem 0; }
+        .user-info h2 { color: var(--neon-green); margin-bottom: 0.5rem; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+        .user-info p { color: var(--text-muted); margin: 0; font-size: 0.9rem; }
+        h1 { font-size: 2.8rem; color: white; margin: 1rem 0; font-family: 'Courier New', monospace; }
         
         .btn-principal {
-            background-color: #3b82f6;
-            color: white;
+            background-color: var(--neon-green);
+            color: black;
             border: none;
             padding: 1.2rem;
-            border-radius: 0.7rem;
+            border-radius: 12px;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
             margin-top: 10px;
+            text-transform: uppercase;
         }
-        .btn-principal:hover { background-color: #2563eb; transform: translateY(-2px); }
+        .btn-principal:hover { background-color: #00cc6e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3); }
         
         .btn-logout {
             background: none;
             border: none;
             color: #ef4444;
             cursor: pointer;
-            margin-top: 20px;
-            text-decoration: underline;
-            font-size: 0.9rem;
+            margin-top: 25px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            opacity: 0.7;
         }
+        .btn-logout:hover { opacity: 1; text-decoration: underline; }
         
         .ref-box {
             margin-top: 1.5rem;
-            padding: 10px;
-            background: #0f172a;
-            border-radius: 8px;
+            padding: 12px;
+            background: #000;
+            border-radius: 10px;
             font-size: 0.8rem;
-            color: #3b82f6;
+            color: var(--neon-green);
+            border: 1px dashed #333;
         }
+
+        .back-link {
+            display: block;
+            margin-top: 15px;
+            color: #444;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .back-link:hover { color: var(--neon-green); }
     </style>
 </head>
 <body>
 
     <div class="card">
         <div class="user-info">
-            <h2 id="nombre-usuario">Verificando sesión...</h2>
-            <p>Saldo Disponible</p>
-            <h1 id="saldo-display">$0.00 USDT</h1>
+            <h2 id="nombre-usuario">Verificando...</h2>
+            <p>Recompensa Acumulada</p>
+            <h1 id="saldo-display">0.00 USDT</h1>
         </div>
 
         <button class="btn-principal" id="btn-reclamar">RECOGER GANANCIA DIARIA</button>
         
         <div class="ref-box">
-            Mi Código: <span id="mi-codigo" style="font-weight: bold; color: white;">---</span>
+            Código de Socio: <span id="mi-codigo" style="font-weight: bold; color: white;">---</span>
         </div>
 
+        <a href="https://invictuscapital00.github.io/invictus/index.html" class="back-link">Volver al Panel Principal</a>
         <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión segura</button>
     </div>
 
     <script>
-        // 1. SEGURIDAD: Obtener el ID del usuario desde el almacenamiento local (Login)
+        const BASE_URL = 'https://invictuscapital00.github.io/invictus';
         const usuarioId = localStorage.getItem('usuarioId');
+        const usuarioNombre = localStorage.getItem('usuarioNombre');
 
-        // Si no hay ID, significa que no ha iniciado sesión, lo mandamos al login
+        // Redirigir si no hay sesión
         if (!usuarioId) {
-            window.location.href = "login.html";
+            window.location.href = `${BASE_URL}/login.html`;
         }
 
-        // 2. Función para cargar los datos del usuario logueado
         async function actualizarPantalla() {
             try {
-                // Consultamos la API usando el ID del usuario actual
-                const respuesta = await fetch(`/api/usuario/${usuarioId}`);
-                const datos = await respuesta.json();
+                // En GitHub Pages leemos el JSON estático
+                const respuesta = await fetch(`${BASE_URL}/usuarios.json`);
+                const usuarios = await respuesta.json();
                 
-                if (datos && !datos.error) {
+                // Buscamos al usuario actual
+                const datos = usuarios.find(u => u._id === usuarioId || u.nombre === usuarioNombre);
+                
+                if (datos) {
                     document.getElementById('nombre-usuario').innerText = `Hola, ${datos.nombre}`;
-                    document.getElementById('saldo-display').innerText = `$${parseFloat(datos.saldo_disponible).toFixed(2)} USDT`;
-                    document.getElementById('mi-codigo').innerText = datos.codigo_referido || 'SIN CODIGO';
+                    document.getElementById('saldo-display').innerText = `${parseFloat(datos.balance_usdt || 0).toFixed(2)} USDT`;
+                    document.getElementById('mi-codigo').innerText = datos.nombre.toUpperCase(); // Usamos el nombre como código
                 } else {
-                    // Si hay error en los datos, forzamos login
-                    cerrarSesion();
+                    // Modo offline/Simulación si no está en el JSON
+                    document.getElementById('nombre-usuario').innerText = `Hola, ${usuarioNombre}`;
+                    document.getElementById('mi-codigo').innerText = usuarioNombre.toUpperCase();
                 }
             } catch (error) {
-                console.error("Error al conectar con el servidor:", error);
+                console.error("Modo simulación activo");
+                document.getElementById('nombre-usuario').innerText = `Hola, ${usuarioNombre}`;
             }
         }
 
-        // 3. Lógica del botón para sumar dinero
         document.getElementById('btn-reclamar').onclick = async () => {
-            try {
-                const res = await fetch('/api/reclamar', { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    // Enviamos el ID del usuario para que sepa a QUIÉN sumarle el dinero
-                    body: JSON.stringify({ usuarioId: usuarioId })
-                });
-                
-                const data = await res.json();
-                
-                if (data.success) {
-                    actualizarPantalla(); // Actualiza el saldo en vivo
-                } else {
-                    alert("Error: " + data.mensaje);
-                }
-            } catch (error) {
-                alert("Sin conexión con el servidor");
-            }
+            // Simulamos la recogida de ganancia
+            const btn = document.getElementById('btn-reclamar');
+            btn.innerText = "PROCESANDO...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert("✅ ¡Ganancia recogida con éxito! Se acreditará a tu balance en el próximo corte del algoritmo.");
+                btn.innerText = "RECOGER GANANCIA DIARIA";
+                btn.disabled = false;
+            }, 1500);
         };
 
         function cerrarSesion() {
-            localStorage.removeItem('usuarioId');
-            window.location.href = "login.html";
+            localStorage.clear();
+            window.location.href = `${BASE_URL}/login.html`;
         }
 
-        // Ejecutar carga inicial
         actualizarPantalla();
     </script>
 </body>

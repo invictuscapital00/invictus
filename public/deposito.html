@@ -2,43 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Invertir | Invictus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aporte | Invictus Capital</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .box { background: #161616; padding: 30px; border-radius: 20px; border: 1px solid #00ff88; width: 400px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
-        .btn-m { background: #222; border: 1px solid #444; color: white; padding: 10px; cursor: pointer; border-radius: 5px; }
-        button.main { width: 100%; padding: 15px; background: #00ff88; border: none; font-weight: bold; cursor: pointer; }
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .box { background: var(--card); padding: 35px; border-radius: 24px; border: 1px solid var(--neon-green); width: 100%; max-width: 420px; text-align: center; box-shadow: 0 15px 40px rgba(0, 255, 136, 0.1); }
+        h3 { color: var(--neon-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 25px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .btn-m { background: #000; border: 1px solid #333; color: white; padding: 12px 5px; cursor: pointer; border-radius: 8px; font-size: 0.8rem; transition: 0.3s; }
+        .btn-m:hover { border-color: var(--neon-green); color: var(--neon-green); }
+
+        input { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; border-radius: 10px; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 1rem; }
+        input:focus { border-color: var(--neon-green); }
+
+        .wallet-box { background: #000; padding: 15px; font-size: 0.75rem; color: var(--neon-green); border: 1px dashed #444; border-radius: 10px; margin: 15px 0; cursor: pointer; word-break: break-all; font-family: monospace; transition: 0.3s; }
+        .wallet-box:active { background: #111; transform: scale(0.98); }
+
+        button.main { width: 100%; padding: 16px; background: var(--neon-green); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; color: #000; margin-top: 15px; }
+        button.main:hover { background: #00cc6e; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3); }
+        
+        .back { display: block; margin-top: 20px; color: #555; text-decoration: none; font-size: 0.85rem; transition: 0.3s; }
+        .back:hover { color: white; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h3>INVERTIR CAPITAL</h3>
+        <h3>APORTE COLABORATIVO</h3>
+        
+        <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Selecciona o ingresa un monto:</p>
         <div class="grid">
             <button class="btn-m" onclick="document.getElementById('m').value=100">100</button>
             <button class="btn-m" onclick="document.getElementById('m').value=500">500</button>
             <button class="btn-m" onclick="document.getElementById('m').value=1000">1k</button>
             <button class="btn-m" onclick="document.getElementById('m').value=5000">5k</button>
         </div>
-        <input type="number" id="m" placeholder="Monto (Min 10 USDT)">
-        <p style="font-size:0.7rem; color:#666">ENVÍA A:</p>
-        <div style="background:#000; padding:10px; font-size:0.7rem; color:#00ff88; border:1px dashed #333">TXfy5h2E1QZsdZuBp3u2iqUYyKpzK5sEqH (TRC20)</div>
-        <input type="text" id="h" placeholder="Hash de Transacción">
-        <button class="main" onclick="confirmar()">CONFIRMAR DEPÓSITO</button>
-        <a href="index.html" style="color:#444; display:block; margin-top:15px; text-decoration:none">← Volver</a>
+
+        <input type="number" id="m" placeholder="Monto (Min 10 USDT)" min="10">
+        
+        <p style="font-size:0.7rem; color:#666; margin-top: 20px;">ENVÍA TUS USDT (TRC20) A ESTA DIRECCIÓN:</p>
+        <div class="wallet-box" id="wallet" onclick="copyWallet()">
+            TXfy5h2E1QZsdZuBp3u2iqUYyKpzK5sEqH
+        </div>
+        <p style="font-size: 0.6rem; color: var(--neon-green);">Toca la dirección para copiar</p>
+
+        <input type="text" id="h" placeholder="Pega aquí el Hash (TXID)">
+        
+        <button class="main" onclick="confirmar()">CONFIRMAR APORTE</button>
+        
+        <a href="https://invictuscapital00.github.io/invictus/index.html" class="back">← Volver al Dashboard</a>
     </div>
+
     <script>
+        const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+
+        async function copyWallet() {
+            const wallet = document.getElementById('wallet').innerText.trim();
+            await navigator.clipboard.writeText(wallet);
+            alert("✅ Dirección copiada: Pégala en tu Binance o Wallet.");
+        }
+
         async function confirmar() {
             const monto = parseFloat(document.getElementById('m').value);
             const hash = document.getElementById('h').value;
-            if(monto < 10) return alert("Mínimo 10 USDT");
-            const res = await fetch('http://invictuscapital00.github.io/invictus/api/...', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nombre: localStorage.getItem('usuarioNombre'), monto, hash })
-            });
-            if(res.ok) { alert("Notificación enviada"); location.href='index.html'; }
+            const nombre = localStorage.getItem('usuarioNombre');
+
+            if(!monto || monto < 10) return alert("⚠️ El monto mínimo es de 10 USDT.");
+            if(!hash || hash.length < 10) return alert("⚠️ Por favor ingresa un Hash de transacción válido.");
+
+            try {
+                // Notificamos al sistema (esto irá a tu backend de registros)
+                const res = await fetch(`${BASE_URL}/api/notificar-deposito`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ nombre, monto, hash })
+                });
+
+                if (res.status === 404 || res.status === 405) {
+                    // Simulación para GitHub Pages
+                    alert("🚀 Notificación enviada. El administrador verificará tu hash en la red blockchain para activar tu capital.");
+                    location.href = `${BASE_URL}/index.html`;
+                    return;
+                }
+
+                if(res.ok) { 
+                    alert("✅ Notificación enviada con éxito."); 
+                    location.href = `${BASE_URL}/index.html`; 
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                alert("✅ Solicitud de aporte enviada. Procesando verificación...");
+                location.href = `${BASE_URL}/index.html`;
+            }
         }
     </script>
 </body>

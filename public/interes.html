@@ -3,62 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Proyectiva | Invictus</title>
+    <title>Calculadora Proyectiva | Invictus Capital</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0a0a0a; color: white; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .calc-card { background: #161616; padding: 30px; border-radius: 20px; border: 1px solid #00ff88; width: 100%; max-width: 500px; }
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; --border: #222; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+        .calc-card { background: var(--card); padding: 35px; border-radius: 24px; border: 1px solid var(--neon-green); width: 100%; max-width: 500px; box-shadow: 0 15px 40px rgba(0, 255, 136, 0.1); align-self: center; }
         
-        h2 { color: #00ff88; text-transform: uppercase; text-align: center; letter-spacing: 2px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
+        h2 { color: var(--neon-green); text-transform: uppercase; text-align: center; letter-spacing: 2px; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 30px; }
         
-        input { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #333; background: #000; color: #00ff88; font-size: 1.2rem; font-weight: bold; box-sizing: border-box; }
+        .input-group { margin-bottom: 25px; }
+        label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
         
-        .result-box { background: #00ff8811; border: 1px dashed #00ff88; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; }
-        .result-val { font-size: 2.5rem; color: #00ff88; font-weight: bold; display: block; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #000; color: var(--neon-green); font-size: 1.3rem; font-weight: bold; box-sizing: border-box; outline: none; transition: 0.3s; text-align: center; }
+        input:focus { border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 136, 0.1); }
         
-        .table-proj { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.8rem; }
-        .table-proj th { color: #444; text-align: left; padding: 10px; border-bottom: 1px solid #222; }
-        .table-proj td { padding: 10px; border-bottom: 1px solid #111; }
+        .result-box { background: rgba(0, 255, 136, 0.05); border: 1px dashed var(--neon-green); padding: 25px; border-radius: 15px; margin-top: 25px; text-align: center; }
+        .result-val { font-size: 2.8rem; color: var(--neon-green); font-weight: bold; display: block; font-family: 'Courier New', monospace; }
+        #ganancia-neta { display: block; margin-top: 5px; font-size: 0.9rem; font-weight: 500; }
+        
+        .table-proj { width: 100%; margin-top: 25px; border-collapse: collapse; font-size: 0.85rem; color: #ccc; }
+        .table-proj th { color: #555; text-align: left; padding: 12px; border-bottom: 1px solid var(--border); text-transform: uppercase; font-size: 0.7rem; }
+        .table-proj td { padding: 12px; border-bottom: 1px solid #111; }
 
-        .btn-calc { width: 100%; padding: 15px; background: #00ff88; color: black; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .back { display: block; text-align: center; margin-top: 20px; color: #444; text-decoration: none; font-size: 0.8rem; }
+        .back { display: block; text-align: center; margin-top: 30px; color: #555; text-decoration: none; font-size: 0.85rem; transition: 0.3s; }
+        .back:hover { color: var(--neon-green); }
     </style>
 </head>
 <body>
 
 <div class="calc-card">
     <h2>Interés Compuesto</h2>
-    <p style="text-align: center; color: #666; font-size: 0.8rem; margin-bottom: 30px;">Proyecta tu libertad financiera a 12 meses.</p>
+    <p class="subtitle">Proyecta tu Aporte Colaborativo a 12 meses.</p>
 
     <div class="input-group">
         <label>Capital Inicial (USDT)</label>
-        <input type="number" id="capital" value="1000" oninput="calcular()">
+        <input type="number" id="capital" value="1000" oninput="calcular()" placeholder="0.00">
     </div>
 
     <div class="input-group">
         <label>Rendimiento Mensual Estimado (%)</label>
-        <input type="number" id="tasa" value="10" oninput="calcular()">
+        <input type="number" id="tasa" value="10" oninput="calcular()" placeholder="10">
     </div>
 
     <div class="result-box">
-        <label style="color: #00ff88;">TOTAL ESTIMADO (12 MESES)</label>
+        <label style="color: var(--neon-green); font-size: 0.7rem;">TOTAL ESTIMADO (12 MESES)</label>
         <span class="result-val" id="total-final">0.00</span>
-        <small id="ganancia-neta" style="color: #888;"></small>
+        <span id="ganancia-neta" style="color: #888;"></span>
     </div>
 
     <table class="table-proj">
         <thead>
             <tr>
                 <th>MES</th>
-                <th>CAPITAL</th>
-                <th>GANANCIA</th>
+                <th>CAPITAL ACUMULADO</th>
+                <th style="text-align: right;">GANANCIA</th>
             </tr>
         </thead>
         <tbody id="tabla-cuerpo"></tbody>
     </table>
 
-    <a href="index.html" class="back">← Volver al Dashboard</a>
+    <a href="https://invictuscapital00.github.io/invictus/index.html" class="back">← Volver al Dashboard Principal</a>
 </div>
 
 <script>
@@ -74,21 +79,23 @@
             let gananciaMes = capitalAcumulado * tasaMensual;
             capitalAcumulado += gananciaMes;
 
-            if (i <= 5 || i === 12) { // Mostrar primeros meses y el final
+            // Mostrar Mes 1, 3, 6, 9 y 12 para mantener la tabla limpia
+            if ([1, 3, 6, 9, 12].includes(i)) {
                 tabla.innerHTML += `
                     <tr>
                         <td>Mes ${i}</td>
-                        <td>${capitalAcumulado.toFixed(2)}</td>
-                        <td style="color: #00ff88;">+${gananciaMes.toFixed(2)}</td>
+                        <td style="font-family: monospace;">$${capitalAcumulado.toFixed(2)}</td>
+                        <td style="color: var(--neon-green); text-align: right; font-weight: bold;">+$${gananciaMes.toFixed(2)}</td>
                     </tr>
                 `;
-            } else if (i === 6) {
-                tabla.innerHTML += `<tr><td colspan="3" style="text-align:center; color:#333">...</td></tr>`;
+            } else if (i === 2) {
+                // Separador visual corto
+                tabla.innerHTML += `<tr><td colspan="3" style="text-align:center; color:#222; padding: 5px;">• • •</td></tr>`;
             }
         }
 
-        document.getElementById('total-final').innerText = capitalAcumulado.toFixed(2);
-        document.getElementById('ganancia-neta').innerText = `Ganancia neta: ${(capitalAcumulado - capitalInicial).toFixed(2)} USDT`;
+        document.getElementById('total-final').innerText = capitalAcumulado.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('ganancia-neta').innerText = `Ganancia neta: +${(capitalAcumulado - capitalInicial).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USDT`;
     }
 
     // Ejecutar al cargar

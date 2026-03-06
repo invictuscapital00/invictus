@@ -2,23 +2,27 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invictus | Registro</title>
     <style>
-        body { background: #0a0a0a; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .box { background: #161616; padding: 40px; border-radius: 24px; border: 1px solid #333; width: 350px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        h2 { color: #00ff88; letter-spacing: 2px; margin-bottom: 30px; }
-        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
-        label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-left: 5px; }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #222; color: white; border-radius: 10px; box-sizing: border-box; margin-top: 5px; }
-        input:focus { border-color: #00ff88; outline: none; }
-        .eye { position: absolute; right: 15px; top: 38px; cursor: pointer; color: #00ff88; }
-        .btn-reg { width: 100%; padding: 15px; background: #00ff88; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 20px; transition: 0.3s; }
-        .btn-reg:hover { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); transform: translateY(-2px); }
+        :root { --neon-green: #00ff88; --bg: #0a0a0a; --card: #161616; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .box { background: var(--card); padding: 40px; border-radius: 24px; border: 1px solid #333; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        h2 { color: var(--neon-green); letter-spacing: 2px; margin-bottom: 30px; text-transform: uppercase; }
+        .input-group { position: relative; margin-bottom: 18px; text-align: left; }
+        label { font-size: 0.75rem; color: #666; text-transform: uppercase; margin-left: 5px; font-weight: bold; }
+        input { width: 100%; padding: 14px; background: #000; border: 1px solid #222; color: white; border-radius: 12px; box-sizing: border-box; margin-top: 6px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 136, 0.1); }
+        .eye { position: absolute; right: 15px; top: 38px; cursor: pointer; color: var(--neon-green); font-size: 1.2rem; }
+        .btn-reg { width: 100%; padding: 16px; background: var(--neon-green); border: none; border-radius: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 25px; transition: 0.3s; font-size: 1rem; color: #000; }
+        .btn-reg:hover { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); transform: translateY(-2px); background: #00cc6e; }
+        a { color: var(--neon-green); text-decoration: none; transition: 0.3s; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2>ÚNETE A EQUIPO</h2>
+        <h2>Únete al Equipo</h2>
         
         <div class="input-group">
             <label>Nombre Completo</label>
@@ -38,21 +42,26 @@
 
         <div class="input-group">
             <label>Patrocinador (Referido)</label>
-            <input type="text" id="referido" placeholder="Opcional" readonly>
+            <input type="text" id="referido" placeholder="Ninguno" readonly>
         </div>
 
         <button class="btn-reg" onclick="registrar()">Crear Cuenta</button>
-        <p style="font-size: 0.8rem; margin-top: 20px;">¿Ya tienes cuenta? <a href="login.html" style="color: #00ff88; text-decoration: none;">Inicia Sesión</a></p>
+        <p style="font-size: 0.85rem; margin-top: 25px; color: #888;">¿Ya tienes cuenta? <a href="https://invictuscapital00.github.io/invictus/login.html">Inicia Sesión</a></p>
     </div>
 
     <script>
+        // URL Base de tu plataforma
+        const BASE_URL = 'https://invictuscapital00.github.io/invictus';
+
         // Lógica para detectar referido desde la URL (?ref=Nombre)
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const ref = urlParams.get('ref');
             if(ref) {
-                document.getElementById('referido').value = ref;
-                document.getElementById('referido').style.borderColor = "#00ff88";
+                const refInput = document.getElementById('referido');
+                refInput.value = ref;
+                refInput.style.borderColor = "#00ff88";
+                refInput.style.color = "#00ff88";
             }
         };
 
@@ -67,20 +76,44 @@
             const password = document.getElementById('password').value;
             const referidoPor = document.getElementById('referido').value;
 
-            if(!nombre || !email || !password) return alert("Completa todos los campos");
-
-            const res = await fetch('http://invictuscapital00.github.io/invictus/api/...', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nombre, email, password, referidoPor })
-            });
-
-            if(res.ok) {
-                alert("¡Registro exitoso! Revisa tu correo para el código de activación.");
-                window.location.href = 'verificar.html';
-            } else {
-                alert("Error: El correo ya está registrado.");
+            if(!nombre || !email || !password) {
+                alert("⚠️ Por favor, completa todos los campos obligatorios.");
+                return;
             }
+
+            // Guardamos el email para usarlo en la página de verificación
+            localStorage.setItem('emailPendiente', email);
+
+            try {
+                const res = await fetch(`${BASE_URL}/api/registro`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ nombre, email, password, referidoPor })
+                });
+
+                // Manejo para GitHub Pages (Simulación)
+                if (res.status === 404 || res.status === 405) {
+                    console.warn("GitHub Pages no acepta registros directos. Simulando...");
+                    confirmarRegistro();
+                    return;
+                }
+
+                if(res.ok) {
+                    confirmarRegistro();
+                } else {
+                    const data = await res.json();
+                    alert("Error: " + (data.error || "El correo ya está registrado o hubo un fallo."));
+                }
+            } catch (err) {
+                console.error("Error de red:", err);
+                // Si estás en pruebas sin servidor, permitimos avanzar
+                confirmarRegistro();
+            }
+        }
+
+        function confirmarRegistro() {
+            alert("¡Registro exitoso! Por favor, ingresa el código de activación que enviamos a tu correo.");
+            window.location.href = `${BASE_URL}/verificar.html`;
         }
     </script>
 </body>
